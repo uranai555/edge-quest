@@ -1,5 +1,6 @@
 package com.edgequest.hero.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,15 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +39,12 @@ import com.edgequest.hero.data.HeroSettings
 import com.edgequest.hero.data.HeroStateDataStore
 import com.edgequest.hero.data.SettingsDataStore
 import com.edgequest.hero.data.SpeechFrequency
+import com.edgequest.hero.ui.theme.DarkNavy
+import com.edgequest.hero.ui.theme.DarkNavyCard
+import com.edgequest.hero.ui.theme.Emerald
+import com.edgequest.hero.ui.theme.Gold
+import com.edgequest.hero.ui.theme.Coral
+import com.edgequest.hero.ui.theme.SubText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,22 +60,29 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     var showClearDialog by remember { mutableStateOf(false) }
 
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = DarkNavy
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = "設定",
                 style = MaterialTheme.typography.headlineMedium,
+                color = Gold,
                 fontWeight = FontWeight.Bold
             )
 
+            // セクション：表示
+            SectionHeader(title = "表示")
+
             SettingSwitchRow(
-                title = "表示ON/OFF",
+                title = "ユウを表示",
                 checked = settings.displayEnabled,
                 onCheckedChange = { enabled ->
                     scope.launch {
@@ -75,35 +92,43 @@ fun SettingsScreen(
                 }
             )
 
-            OptionSection(title = "キャラサイズ") {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(36, 48, 64).forEach { size ->
-                        FilterChip(
-                            selected = settings.characterSizeDp == size,
-                            onClick = {
-                                scope.launch { settingsDataStore.setCharacterSizeDp(size) }
-                                onSizeChanged?.invoke(size)
-                            },
-                            label = { Text(text = "${size}dp") }
-                        )
-                    }
+            SectionSubtitle(text = "キャラサイズ")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(36, 48, 64).forEach { size ->
+                    FilterChip(
+                        selected = settings.characterSizeDp == size,
+                        onClick = {
+                            scope.launch { settingsDataStore.setCharacterSizeDp(size) }
+                            onSizeChanged?.invoke(size)
+                        },
+                        label = { Text(text = "${size}dp") }
+                    )
                 }
             }
 
-            OptionSection(title = "台詞頻度") {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SpeechFrequency.entries.forEach { frequency ->
-                        FilterChip(
-                            selected = settings.speechFrequency == frequency,
-                            onClick = {
-                                scope.launch { settingsDataStore.setSpeechFrequency(frequency) }
-                            },
-                            label = { Text(text = frequency.label) }
-                        )
-                    }
+            // セクション：ふるまい
+            SectionHeader(title = "ふるまい")
+
+            SectionSubtitle(text = "台詞頻度")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SpeechFrequency.entries.forEach { frequency ->
+                    FilterChip(
+                        selected = settings.speechFrequency == frequency,
+                        onClick = {
+                            scope.launch { settingsDataStore.setSpeechFrequency(frequency) }
+                        },
+                        label = { Text(text = frequency.label) }
+                    )
                 }
             }
 
+            SettingSwitchRow(
+                title = "深夜リアクション",
+                checked = settings.midnightReactionEnabled,
+                onCheckedChange = {
+                    scope.launch { settingsDataStore.setMidnightReactionEnabled(it) }
+                }
+            )
             SettingSwitchRow(
                 title = "バッテリーリアクション",
                 checked = settings.batteryReactionEnabled,
@@ -125,37 +150,47 @@ fun SettingsScreen(
                     scope.launch { settingsDataStore.setIdleReturnReactionEnabled(it) }
                 }
             )
-            SettingSwitchRow(
-                title = "深夜リアクション",
-                checked = settings.midnightReactionEnabled,
-                onCheckedChange = {
-                    scope.launch { settingsDataStore.setMidnightReactionEnabled(it) }
-                }
-            )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            // セクション：ユウ
+            SectionHeader(title = "ユウ")
 
             OutlinedButton(
                 onClick = { scope.launch { heroStateDataStore.resetPosition() } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(text = "位置リセット")
+                Text(text = "表示位置をリセット")
             }
 
             Button(
                 onClick = { showClearDialog = true },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Coral)
             ) {
                 Text(text = "データ全消去")
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // プライバシー
+            SectionHeader(title = "プライバシー")
+            Text(
+                text = "このアプリは通知の中身、画面内容、\n入力内容を読み取りません。\nバッテリー残量と時間帯のみを\nトリガーとして使用します。",
+                style = MaterialTheme.typography.bodySmall,
+                color = SubText
+            )
         }
     }
 
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text(text = "データを全消去しますか？") },
-            text = { Text(text = "設定と勇者キャラの位置情報を初期状態に戻します。") },
+            containerColor = DarkNavyCard,
+            titleContentColor = Gold,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
+            title = { Text(text = "データを全消去しますか？", color = Gold) },
+            text = { Text(text = "設定と勇者キャラの状態を初期状態に戻します。") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -167,12 +202,12 @@ fun SettingsScreen(
                         }
                     }
                 ) {
-                    Text(text = "消去")
+                    Text(text = "消去", color = Coral)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearDialog = false }) {
-                    Text(text = "キャンセル")
+                    Text(text = "キャンセル", color = SubText)
                 }
             }
         )
@@ -180,18 +215,23 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun OptionSection(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-        content()
-    }
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = Emerald,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+}
+
+@Composable
+private fun SectionSubtitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = SubText
+    )
 }
 
 @Composable
@@ -201,18 +241,26 @@ private fun SettingSwitchRow(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(DarkNavyCard, RoundedCornerShape(12.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Emerald,
+                checkedTrackColor = Emerald.copy(alpha = 0.3f)
+            )
         )
     }
 }
