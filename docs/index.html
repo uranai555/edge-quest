@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画面端クエスト - Edge Quest</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Noto Sans JP', sans-serif; background: #101827; color: #F5F7FA; min-height: 100vh; }
+.container { max-width: 480px; margin: 0 auto; padding: 32px 20px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.hero-preview { width: 120px; height: 120px; background: #182235; border-radius: 24px; display: flex; align-items: center; justify-content: center; border: 2px solid #2A3548; font-size: 60px; }
+h1 { font-size: 28px; font-weight: 700; color: #F4C95D; text-align: center; }
+.subtitle { font-size: 14px; color: #A8B3C7; text-align: center; }
+.catch { font-size: 18px; color: #35D39D; text-align: center; font-weight: 600; line-height: 1.6; }
+.card { background: #182235; border-radius: 16px; padding: 24px; width: 100%; border: 1px solid #2A3548; }
+.card h3 { color: #35D39D; font-size: 16px; margin-bottom: 12px; }
+.features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.feature { background: #101827; border-radius: 12px; padding: 16px; text-align: center; }
+.feature .icon { font-size: 24px; margin-bottom: 8px; }
+.feature .label { font-size: 12px; color: #A8B3C7; }
+.lines { display: flex; flex-direction: column; gap: 8px; }
+.line { background: #101827; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #F5F7FA; border-left: 3px solid #35D39D; }
+.evo { display: flex; gap: 12px; }
+.evo-item { flex: 1; background: #101827; border-radius: 12px; padding: 16px; text-align: center; }
+.evo-item .stage { font-size: 11px; color: #F4C95D; margin-bottom: 4px; }
+.evo-item .name { font-size: 13px; color: #F5F7FA; }
+.btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; }
+.btn-primary { background: #35D39D; color: #101827; }
+.btn-secondary { background: #182235; color: #35D39D; border: 1px solid #35D39D; }
+.footer { text-align: center; font-size: 12px; color: #A8B3C7; padding: 32px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero-preview">⚔️</div>
+  
+  <h1>画面端クエスト</h1>
+  <p class="subtitle">Edge Quest</p>
+  <p class="catch">スマホの端に、<br>小さな勇者を召喚しよう</p>
+
+  <div class="card">
+    <h3>ユウがしてくれること</h3>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">💬</div>
+        <div class="label">タップで一言</div>
+      </div>
+      <div class="feature">
+        <div class="icon">🔋</div>
+        <div class="label">バッテリー反応</div>
+      </div>
+      <div class="feature">
+        <div class="icon">🌙</div>
+        <div class="label">時間帯で変化</div>
+      </div>
+      <div class="feature">
+        <div class="icon">⬆️</div>
+        <div class="label">軽い育成</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>ユウのひとこと</h3>
+    <div class="lines">
+      <div class="line">「また深淵を覗いているのか。魔王より手強いな、この無限スクロールは。」</div>
+      <div class="line">「電池が少ないぞ。我の命もあとわずかだ。」</div>
+      <div class="line">「深夜だぞ。魔王ももう寝ている。」</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>進化</h3>
+    <div class="evo">
+      <div class="evo-item">
+        <div class="stage">STAGE 1</div>
+        <div class="name">見習い勇者</div>
+      </div>
+      <div class="evo-item">
+        <div class="stage">STAGE 2</div>
+        <div class="name">小さな勇者</div>
+      </div>
+      <div class="evo-item">
+        <div class="stage">STAGE 3</div>
+        <div class="name">画面端の英雄</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="#" class="btn btn-primary">開発中 — 近日公開</a>
+  <a href="https://github.com/uranai555/edge-quest" class="btn btn-secondary">GitHubで開発状況を見る</a>
+
+  <div class="footer">
+    <p>このアプリは通知の中身・画面内容を読み取りません</p>
+    <p>表示はいつでもOFFにできます</p>
+  </div>
+</div>
+</body>
+</html>
