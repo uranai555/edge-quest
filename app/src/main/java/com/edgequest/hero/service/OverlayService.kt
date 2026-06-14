@@ -9,17 +9,29 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.edgequest.hero.R
+import com.edgequest.hero.data.HeroStateDataStore
+import com.edgequest.hero.data.model.LineCategory
 import com.edgequest.hero.overlay.HeroOverlayManager
 import com.edgequest.hero.overlay.SpeechManager
+import com.edgequest.hero.reaction.ReactionEngine
+import com.edgequest.hero.growth.GrowthManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class OverlayService : Service() {
 
     private var overlayManager: HeroOverlayManager? = null
     private var speechManager: SpeechManager? = null
+    private var reactionEngine: ReactionEngine? = null
+    private var growthManager: GrowthManager? = null
+    private var heroDataStore: HeroStateDataStore? = null
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        heroDataStore = HeroStateDataStore(applicationContext)
         speechManager = SpeechManager(
             context = this,
             windowManager = getSystemService(WINDOW_SERVICE) as android.view.WindowManager,
@@ -28,7 +40,34 @@ class OverlayService : Service() {
         )
         overlayManager = HeroOverlayManager(
             context = this,
-            onHeroTap = { speechManager?.onTap() }
+            onHeroTap = {
+                speechManager?.onTap()
+                growthManager?.onEvent(GrowthManager.EventType.TAP)
+            }
+        )
+        reactionEngine = ReactionEngine(
+            context = this,
+            onTrigger = { category ->
+                val shown = speechManager?.onTrigger(category) ?: false
+                if (shown) {
+                    val event = when (category) {
+                        LineCategory.IDLE_RETURN -> GrowthManager.EventType.IDLE_RETURN
+                        else -> GrowthManager.EventType.EVENT
+                    }
+                    growthManager?.onEvent(event)
+                }
+                shown
+            }
+        )
+        growthManager = GrowthManager(
+            heroStateDataStore = heroDataStore!!,
+            onLevelUp = {
+                reactionEngine?.onLevelUp()
+                CoroutineScope(Dispatchers.Main).launch {
+                    val state = heroDataStore!!.state.first()
+                    speechManager?.updateEvolutionStage(state.evolutionStage)
+                }
+            }
         )
     }
 
@@ -36,6 +75,7 @@ class OverlayService : Service() {
         when (intent?.action) {
             ACTION_STOP -> {
                 overlayManager?.hide()
+                reactionEngine?.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 return START_NOT_STICKY
@@ -67,6 +107,11 @@ class OverlayService : Service() {
                 val savedY = if (intent?.hasExtra(EXTRA_POS_Y) == true)
                     intent.getIntExtra(EXTRA_POS_Y, -1) else null
                 overlayManager?.show(sizeDp, savedX, savedY)
+                reactionEngine?.start()
+                reactionEngine?.onOverlayShown()
+                CoroutineScope(Dispatchers.IO).launch {
+                    growthManager?.load()
+                }
             }
         }
         return START_STICKY
@@ -76,6 +121,7 @@ class OverlayService : Service() {
 
     override fun onDestroy() {
         speechManager?.destroy()
+        reactionEngine?.stop()
         overlayManager?.hide()
         super.onDestroy()
     }
