@@ -14,7 +14,8 @@ import com.edgequest.hero.R
  * WindowManager をラップし、勇者オーバーレイViewの表示・非表示・状態管理を行う。
  */
 class HeroOverlayManager(
-    private val context: Context
+    private val context: Context,
+    private val onHeroTap: () -> Unit = {}
 ) {
     private val windowManager: WindowManager =
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -101,7 +102,7 @@ class HeroOverlayManager(
             context = context,
             windowManager = windowManager,
             params = params!!,
-            onTap = { /* C3吹き出しで実装 */ },
+            onTap = onHeroTap,
             onDragStart = { /* 必要なら */ },
             onDragEnd = { p -> edgeSnapHelper?.snap(p) }
         ).apply {

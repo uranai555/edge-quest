@@ -10,15 +10,26 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.edgequest.hero.R
 import com.edgequest.hero.overlay.HeroOverlayManager
+import com.edgequest.hero.overlay.SpeechManager
 
 class OverlayService : Service() {
 
     private var overlayManager: HeroOverlayManager? = null
+    private var speechManager: SpeechManager? = null
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        overlayManager = HeroOverlayManager(this)
+        speechManager = SpeechManager(
+            context = this,
+            windowManager = getSystemService(WINDOW_SERVICE) as android.view.WindowManager,
+            heroParams = android.view.WindowManager.LayoutParams(),
+            heroSizePx = 48
+        )
+        overlayManager = HeroOverlayManager(
+            context = this,
+            onHeroTap = { speechManager?.onTap() }
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -64,6 +75,7 @@ class OverlayService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        speechManager?.destroy()
         overlayManager?.hide()
         super.onDestroy()
     }
