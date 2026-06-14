@@ -1,0 +1,18 @@
+# Android build outputs
+app/build/
+.gradle/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle wrapper binary (it's a tracked jar)
+# gradle/wrapper/gradle-wrapper.jar is intentionally tracked
+
+# Python
+__pycache__/
+*.pyc

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">画面端クエスト</string>
+    <string name="overlay_service_channel_name">勇者キャラ表示</string>
+    <string name="overlay_service_notification">画面端に勇者キャラを表示中</string>
+    <string name="foreground_service_special_use_subtype">画面端に小さい勇者キャラを常駐表示するため</string>
+</resources>
