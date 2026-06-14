@@ -39,12 +39,12 @@ import com.edgequest.hero.data.HeroSettings
 import com.edgequest.hero.data.HeroStateDataStore
 import com.edgequest.hero.data.SettingsDataStore
 import com.edgequest.hero.data.SpeechFrequency
-import com.edgequest.hero.ui.theme.DarkNavy
-import com.edgequest.hero.ui.theme.DarkNavyCard
+import com.edgequest.hero.ui.theme.SubText
 import com.edgequest.hero.ui.theme.Emerald
 import com.edgequest.hero.ui.theme.Gold
 import com.edgequest.hero.ui.theme.Coral
-import com.edgequest.hero.ui.theme.SubText
+import com.edgequest.hero.ui.theme.DarkNavy
+import com.edgequest.hero.ui.theme.DarkNavyCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +54,7 @@ fun SettingsScreen(
     heroStateDataStore: HeroStateDataStore,
     onDisplayEnabledChanged: (Boolean) -> Unit,
     onSizeChanged: ((Int) -> Unit)? = null,
+    onDebugAction: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val settings by settingsDataStore.settings.collectAsState(initial = HeroSettings())
@@ -180,6 +181,58 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = SubText
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // === 開発者向け ===
+            SectionHeader(title = "開発者向けテスト")
+            Text(
+                text = "進化段階",
+                style = MaterialTheme.typography.bodyMedium,
+                color = SubText
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                (1..3).forEach { stage ->
+                    FilterChip(
+                        selected = false,
+                        onClick = {
+                            onDebugAction?.invoke("stage:$stage")
+                        },
+                        label = { Text(text = "Stage $stage") }
+                    )
+                }
+            }
+
+            Text(
+                text = "リアクションテスト",
+                style = MaterialTheme.typography.bodyMedium,
+                color = SubText
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                listOf("低バッテリー", "深夜", "放置復帰", "長時間").forEach { label ->
+                    OutlinedButton(
+                        onClick = {
+                            onDebugAction?.invoke("trigger:$label")
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(2.dp)
+                    ) {
+                        Text(text = label, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = {
+                    onDebugAction?.invoke("reset_cooldowns")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(text = "クールダウンリセット")
+            }
         }
     }
 

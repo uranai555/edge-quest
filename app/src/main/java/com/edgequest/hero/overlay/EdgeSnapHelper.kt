@@ -20,13 +20,20 @@ class EdgeSnapHelper(
     /**
      * 現在のparams.xから最も近い画面端に吸着する。
      */
+    private val marginDp = 4
+
     fun snap(params: WindowManager.LayoutParams) {
         animator?.cancel()
 
         val screenWidth = getScreenWidth()
         val viewWidth = view.width
+        val marginPx = (marginDp * view.context.resources.displayMetrics.density).toInt()
         val centerX = params.x + viewWidth / 2f
-        val targetX: Int = if (centerX < screenWidth / 2f) 0 else screenWidth - viewWidth
+        val targetX: Int = if (centerX < screenWidth / 2f) {
+            marginPx
+        } else {
+            screenWidth - viewWidth - marginPx
+        }
 
         val startX = params.x
         if (startX == targetX) return

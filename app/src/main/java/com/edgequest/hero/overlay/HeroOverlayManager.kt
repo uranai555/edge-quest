@@ -187,6 +187,14 @@ class HeroOverlayManager(
     }
 
     /**
+     * 進化段階設定（デバッグ用）
+     */
+    fun setEvolutionStage(stage: Int) {
+        heroView?.evolutionStage = stage.coerceIn(1, 3)
+        heroView?.invalidate()
+    }
+
+    /**
      * 表示状態の更新
      */
     fun isDisplayed(): Boolean = isVisible

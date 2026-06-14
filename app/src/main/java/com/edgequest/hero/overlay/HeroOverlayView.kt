@@ -78,6 +78,7 @@ class HeroOverlayView @JvmOverloads constructor(
     private var lastTouchY = 0f
     private var isDragging = false
     private var bounceOffset = 0f
+    private var blinkAlpha = 0f
     private var isBlinking = false
 
     // 表情: 0=normal, 1=proud, 2=panic

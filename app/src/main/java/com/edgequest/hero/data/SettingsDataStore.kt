@@ -31,7 +31,7 @@ enum class SpeechFrequency(val label: String) {
 data class HeroSettings(
     val displayEnabled: Boolean = true,
     val characterSizeDp: Int = 48,
-    val speechFrequency: SpeechFrequency = SpeechFrequency.Normal,
+    val speechFrequency: SpeechFrequency = SpeechFrequency.Low,
     val batteryReactionEnabled: Boolean = true,
     val timeReactionEnabled: Boolean = true,
     val idleReturnReactionEnabled: Boolean = true,
