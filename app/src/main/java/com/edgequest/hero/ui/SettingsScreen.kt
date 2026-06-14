@@ -43,6 +43,7 @@ fun SettingsScreen(
     settingsDataStore: SettingsDataStore,
     heroStateDataStore: HeroStateDataStore,
     onDisplayEnabledChanged: (Boolean) -> Unit,
+    onSizeChanged: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val settings by settingsDataStore.settings.collectAsState(initial = HeroSettings())
@@ -81,6 +82,7 @@ fun SettingsScreen(
                             selected = settings.characterSizeDp == size,
                             onClick = {
                                 scope.launch { settingsDataStore.setCharacterSizeDp(size) }
+                                onSizeChanged?.invoke(size)
                             },
                             label = { Text(text = "${size}dp") }
                         )

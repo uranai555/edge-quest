@@ -18,6 +18,9 @@ import com.edgequest.hero.service.OverlayService
 import com.edgequest.hero.ui.PermissionScreen
 import com.edgequest.hero.ui.SettingsScreen
 import com.edgequest.hero.ui.theme.EdgeQuestTheme
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private lateinit var settingsDataStore: SettingsDataStore
@@ -44,6 +47,13 @@ class MainActivity : ComponentActivity() {
                         heroStateDataStore = heroStateDataStore,
                         onDisplayEnabledChanged = { enabled ->
                             if (enabled) startOverlayService() else stopOverlayService()
+                        },
+                        onSizeChanged = { size ->
+                            val intent = Intent(this@MainActivity, OverlayService::class.java).apply {
+                                action = OverlayService.ACTION_UPDATE_SIZE
+                                putExtra(OverlayService.EXTRA_SIZE_DP, size)
+                            }
+                            startService(intent)
                         }
                     )
                 } else {
@@ -76,11 +86,21 @@ class MainActivity : ComponentActivity() {
     private fun startOverlayService() {
         val intent = Intent(this, OverlayService::class.java).apply {
             action = OverlayService.ACTION_START
+            putExtra(OverlayService.EXTRA_SIZE_DP, 48)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ContextCompat.startForegroundService(this, intent)
-        } else {
-            startService(intent)
+        // 保存された位置があれば渡す
+        kotlinx.coroutines.MainScope().launch {
+            heroStateDataStore.state.first().let { state ->
+                if (state.x != 0 || state.y != 0) {
+                    intent.putExtra(OverlayService.EXTRA_POS_X, state.x)
+                    intent.putExtra(OverlayService.EXTRA_POS_Y, state.y)
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this@MainActivity, intent)
+            } else {
+                startService(intent)
+            }
         }
     }
 
